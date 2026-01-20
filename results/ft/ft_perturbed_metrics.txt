@@ -1,0 +1,17 @@
+# Test metrics
+FM_true_mean_N: 78429.1
+FM_pred_mean_N: 2997.3
+MAE_N: 75431.8
+RMSE_N: 102882
+MAPE_percent: 90.6792 (%)
+R2: -1.16248
+frac_within_1pct: 0.0000 (fraction)
+frac_within_3pct: 0.0000 (fraction)
+frac_within_5pct: 0.0000 (fraction)
+frac_within_10pct: 0.0000 (fraction)
+k_true_mean: 0.702601
+k_pred_mean: 0.065366
+k_MAE: 0.637235
+k_MAPE_percent: 90.6792 (%)
+k_frac_within_5pct: 0
+k_frac_within_10pct: 0

@@ -1,0 +1,14 @@
+model: FT
+dataset: ideal
+mode: k_meas
+seed: 44
+MAE_FM: 2367.37505270449
+RMSE_FM: 3180.008887205111
+R2_FM: 0.9982234789129878
+MAPE_FM(%): 2.36219266653061
+within_5%: 0.998
+within_10%: 1.0
+under_tight_ratio: 0.003
+over_tight_ratio: 0.997
+n_test: 2000
+run_id: ft_ideal_mode-k_meas_seed-44

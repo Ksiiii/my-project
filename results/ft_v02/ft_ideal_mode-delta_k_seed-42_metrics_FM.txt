@@ -1,0 +1,14 @@
+model: FT
+dataset: ideal
+mode: delta_k
+seed: 42
+MAE_FM: 947.3183744131169
+RMSE_FM: 1393.4067882613895
+R2_FM: 0.9996528540934793
+MAPE_FM(%): 1.0877531873328337
+within_5%: 1.0
+within_10%: 1.0
+under_tight_ratio: 0.32
+over_tight_ratio: 0.68
+n_test: 2000
+run_id: ft_ideal_mode-delta_k_seed-42

@@ -1,0 +1,14 @@
+model: FT
+dataset: perturbed
+mode: fm
+seed: 42
+MAE_FM: 96464.14173302823
+RMSE_FM: 121466.14527649146
+R2_FM: -1.7078094262382986
+MAPE_FM(%): 98.95936450474927
+within_5%: 0.0
+within_10%: 0.0
+under_tight_ratio: 1.0
+over_tight_ratio: 0.0
+n_test: 2000
+run_id: ft_perturbed_mode-fm_seed-42

@@ -1,0 +1,96 @@
+absl-py==2.3.1
+aiohappyeyeballs==2.6.1
+aiohttp==3.13.3
+aiosignal==1.4.0
+antlr4-python3-runtime==4.9.3
+asttokens==3.0.1
+attrs==25.4.0
+brotlicffi @ file:///home/task_176496126189826/conda-bld/brotlicffi_1764961318485/work
+certifi @ file:///home/task_176313480683104/conda-bld/certifi_1763135330277/work/certifi
+cffi @ file:///home/task_176183215096628/conda-bld/cffi_1761832773152/work
+charset-normalizer @ file:///home/task_176174481308776/conda-bld/charset-normalizer_1761744826568/work
+comm==0.2.3
+contourpy @ file:///home/conda/feedstock_root/build_artifacts/contourpy_1762525251295/work
+cycler @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_cycler_1764466758/work
+decorator==5.2.1
+einops==0.7.0
+executing==2.2.1
+filelock @ file:///home/task_176241979082285/conda-bld/filelock_1762419845654/work
+fonttools @ file:///home/conda/feedstock_root/build_artifacts/fonttools_1765632549069/work
+frozenlist==1.8.0
+fsspec==2025.12.0
+gmpy2 @ file:///home/task_176474799705104/conda-bld/gmpy2_1764748042710/work
+grpcio==1.76.0
+idna @ file:///home/task_176191177554882/conda-bld/idna_1761911981359/work
+ipython==9.8.0
+ipython_pygments_lexers==1.1.1
+ipywidgets==8.1.8
+jedi==0.19.2
+Jinja2 @ file:///croot/jinja2_1741710844255/work
+joblib @ file:///home/conda/feedstock_root/build_artifacts/joblib_1765794027227/work
+jupyterlab_widgets==3.0.16
+kiwisolver @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_kiwisolver_1762488738/work
+lightning==2.6.0
+lightning-utilities==0.15.2
+Markdown==3.10
+markdown-it-py==4.0.0
+MarkupSafe @ file:///croot/markupsafe_1738584038848/work
+matplotlib==3.10.8
+matplotlib-inline==0.2.1
+mdurl==0.1.2
+mpmath @ file:///work/perseverance-python-buildout/croot/mpmath_1698864994882/work
+multidict==6.7.0
+munkres==1.1.4
+networkx @ file:///home/task_176537855201373/conda-bld/networkx_1765378627621/work
+numpy==1.26.4
+omegaconf==2.3.0
+packaging @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_packaging_1745345660/work
+pandas @ file:///home/conda/feedstock_root/build_artifacts/pandas_1759265541279/work
+parso==0.8.5
+pexpect==4.9.0
+pillow @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_pillow_1767353193/work
+prompt_toolkit==3.0.52
+propcache==0.4.1
+protobuf==5.28.3
+ptyprocess==0.7.0
+pure_eval==0.2.3
+pycparser @ file:///home/task_175749564075091/conda-bld/pycparser_1757496039511/work
+Pygments==2.19.2
+pyparsing @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_pyparsing_1766475444/work
+PySide6==6.10.1
+PySocks @ file:///home/task_176175225699803/conda-bld/pysocks_1761753009944/work
+python-dateutil @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_python-dateutil_1751104122/work
+pytorch-lightning==2.4.0
+pytorch-tabnet==4.1.0
+pytorch-tabular==1.1.1
+pytz @ file:///home/conda/feedstock_root/build_artifacts/pytz_1742920838005/work
+PyYAML @ file:///home/task_176346544403961/conda-bld/pyyaml_1763465494824/work
+requests @ file:///home/task_176235960792214/conda-bld/requests_1762359619036/work
+rich==14.2.0
+scikit-learn @ file:///home/conda/feedstock_root/build_artifacts/scikit-learn_1757406006820/work/dist/scikit_learn-1.7.2-cp312-cp312-linux_x86_64.whl#sha256=129fb53912f867c66de404c45e47a17c8d2466e12961a80dadee213c841e7450
+scipy @ file:///home/conda/feedstock_root/build_artifacts/scipy-split_1766107199720/work/dist/scipy-1.16.3-cp312-cp312-linux_x86_64.whl#sha256=07dfdc8df8744780247d9e50f62c479a8dfed6d7b42fcb882317fcfa5b68c42b
+setuptools==80.9.0
+shiboken6==6.10.1
+six @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_six_1753199211/work
+stack-data==0.6.3
+sympy==1.13.1
+tensorboard==2.20.0
+tensorboard-data-server==0.7.2
+threadpoolctl @ file:///home/conda/feedstock_root/build_artifacts/threadpoolctl_1741878222898/work
+torch==2.5.1
+torchaudio==2.5.1
+torchmetrics==1.5.2
+torchvision==0.20.1
+tornado @ file:///home/conda/feedstock_root/build_artifacts/tornado_1765836395280/work
+tqdm==4.67.1
+traitlets==5.14.3
+triton==3.1.0
+typing_extensions @ file:///croot/typing_extensions_1756280817316/work
+tzdata @ file:///home/conda/feedstock_root/build_artifacts/python-tzdata_1765719872007/work
+unicodedata2 @ file:///home/conda/feedstock_root/build_artifacts/unicodedata2_1763054767730/work
+urllib3 @ file:///home/task_176539906570338/conda-bld/urllib3_1765399195993/work
+wcwidth==0.2.14
+Werkzeug==3.1.4
+wheel==0.45.1
+widgetsnbextension==4.0.15
+yarl==1.22.0

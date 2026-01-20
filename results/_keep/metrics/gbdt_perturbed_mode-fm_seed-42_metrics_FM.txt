@@ -1,0 +1,14 @@
+model: GBDT
+dataset: perturbed
+mode: fm
+seed: 42
+MAE_FM: 804.8013223609622
+RMSE_FM: 1363.6755476554576
+R2_FM: 0.9996587051749437
+MAPE_FM(%): 1.0136601784780785
+within_5%: 0.988
+within_10%: 1.0
+under_tight_ratio: 0.487
+over_tight_ratio: 0.513
+n_test: 2000
+run_id: gbdt_perturbed_mode-fm_seed-42

@@ -1,0 +1,14 @@
+model: FT
+dataset: perturbed
+mode: delta_k
+seed: 43
+MAE_FM: 1898.4215314041173
+RMSE_FM: 2842.0013285036766
+R2_FM: 0.9985008486393617
+MAPE_FM(%): 2.2573027542842246
+within_5%: 0.9085
+within_10%: 0.9965
+under_tight_ratio: 0.2785
+over_tight_ratio: 0.7215
+n_test: 2000
+run_id: ft_perturbed_mode-delta_k_seed-43
