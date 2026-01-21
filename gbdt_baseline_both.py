@@ -1,21 +1,14 @@
-# gbdt_baseline_both.py - v02 Grid Runner Friendly Version
+# gbdt_baseline_both.py - v02 Grid Runner Friendly Version (WP0 Split-Fixed Enhanced)
 # 目标：
 # - 支持数据集 {ideal, perturbed}
 # - 支持目标模式 {fm, k_meas, delta_k}
 # - 统一在 FM_N 空间评估并保存结果（txt + scatter + 可选 summary CSV）
-#
-# 用法示例：
-#   python gbdt_baseline_both.py --dataset ideal --mode k_meas --seed 42
-#   python gbdt_baseline_both.py --dataset all --mode all --seed 42
-#
-# 说明：
-# - 数据默认读取 data/02 目录下的 v02 CSV（与项目约定一致）
-# - 输出默认写入 results/gbdt_v02
+# - ✅ 支持 --split_dir：读取固化 train/val/test 切分（WP0 必需）
 
 import os
 import math
 import argparse
-from typing import Tuple, List, Dict, Any, Optional
+from typing import Tuple, List, Dict, Any
 
 import numpy as np
 import pandas as pd
@@ -49,7 +42,7 @@ def ensure_dir(p: str) -> None:
 
 
 def split_df(df: pd.DataFrame, seed: int, test_size: float = 0.2, val_size_in_trainval: float = 0.2
-             ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+            ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
     返回 train/val/test 三份：
     - test 占总量 test_size（默认 0.2）
@@ -59,6 +52,24 @@ def split_df(df: pd.DataFrame, seed: int, test_size: float = 0.2, val_size_in_tr
     trainval_df, test_df = train_test_split(df, test_size=test_size, random_state=seed)
     train_df, val_df = train_test_split(trainval_df, test_size=val_size_in_trainval, random_state=seed)
     return train_df.reset_index(drop=True), val_df.reset_index(drop=True), test_df.reset_index(drop=True)
+
+
+def load_splits(df: pd.DataFrame, split_dir: str) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """
+    从 split_dir 读取固化的 train/val/test 索引（npy 文件），并切分 df。
+    split_dir 需要包含：
+      - train_idx.npy
+      - val_idx.npy
+      - test_idx.npy
+    """
+    train_idx = np.load(os.path.join(split_dir, "train_idx.npy"))
+    val_idx = np.load(os.path.join(split_dir, "val_idx.npy"))
+    test_idx = np.load(os.path.join(split_dir, "test_idx.npy"))
+
+    train_df = df.iloc[train_idx].reset_index(drop=True)
+    val_df = df.iloc[val_idx].reset_index(drop=True)
+    test_df = df.iloc[test_idx].reset_index(drop=True)
+    return train_df, val_df, test_df
 
 
 def load_dataset(tag: str, data_dir: str, datasets_map: Dict[str, str]) -> pd.DataFrame:
@@ -183,6 +194,7 @@ def run_one(
     data_dir: str,
     datasets_map: Dict[str, str],
     out_dir: str,
+    split_dir: str = "",
     n_estimators: int = 300,
     learning_rate: float = 0.05,
     max_depth: int = 3,
@@ -190,7 +202,12 @@ def run_one(
 ) -> Dict[str, Any]:
     """运行单个 (dataset, mode, seed) 设置，返回 FM 空间指标。"""
     df = load_dataset(tag, data_dir, datasets_map)
-    train_df, val_df, test_df = split_df(df, seed=seed)
+
+    # ✅ WP0：优先使用固化切分
+    if split_dir:
+        train_df, val_df, test_df = load_splits(df, split_dir)
+    else:
+        train_df, val_df, test_df = split_df(df, seed=seed)
 
     X_train, y_train, feature_cols, target_col = build_features_and_labels(train_df, mode)
     X_test, y_test, _, _ = build_features_and_labels(test_df, mode)
@@ -206,7 +223,7 @@ def run_one(
 
     y_pred_test = model.predict(X_test)
 
-    # 目标空间指标（辅助调试）
+    # 目标空间指标（辅助调试/表格对齐）
     base_mae = float(mean_absolute_error(y_test, y_pred_test))
     base_rmse = float(math.sqrt(mean_squared_error(y_test, y_pred_test)))
     base_r2 = float(r2_score(y_test, y_pred_test))
@@ -237,6 +254,10 @@ def main() -> None:
     parser.add_argument("--out_dir", type=str, default="")
     parser.add_argument("--summary_csv", type=str, default="")  # 可选：追加写入汇总表
 
+    # ✅ WP0：固化 split 目录
+    parser.add_argument("--split_dir", type=str, default="",
+                        help="Fixed split dir, e.g. splits/02/ideal/seed_0")
+
     # 模型超参（保持与你原版一致，支持命令行覆盖）
     parser.add_argument("--n_estimators", type=int, default=300)
     parser.add_argument("--learning_rate", type=float, default=0.05)
@@ -255,11 +276,17 @@ def main() -> None:
     all_rows: List[Dict[str, Any]] = []
     for tag in selected_datasets:
         for mode in selected_modes:
+            # 对每个 dataset 自动推导 split_dir：如果用户传的是空，就退回随机切分
+            auto_split_dir = args.split_dir
+            if (not auto_split_dir) and args.dataset != "all":
+                auto_split_dir = args.split_dir
+
             print(f"\n========== 运行 GBDT ({tag}) mode={mode} seed={args.seed} ==========")
             row = run_one(
                 tag=tag, mode=mode, seed=args.seed,
                 data_dir=data_dir, datasets_map=DEFAULT_DATASETS,
                 out_dir=out_dir,
+                split_dir=auto_split_dir,
                 n_estimators=args.n_estimators,
                 learning_rate=args.learning_rate,
                 max_depth=args.max_depth,

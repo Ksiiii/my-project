@@ -1,9 +1,0 @@
-mode: k_meas
-MAE_FM: 2.0703737391158938e-11
-RMSE_FM: 2.6606536521459937e-11
-R2_FM: 1.0
-MAPE_FM(%): 2.1172804463608704e-14
-within_5%: 1.0
-within_10%: 1.0
-under_tight_ratio: 1.0
-over_tight_ratio: 0.0

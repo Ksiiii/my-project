@@ -1,19 +1,10 @@
-# ft_transformer_baseline_both.py - v02 Grid Runner Friendly Version
+# ft_transformer_baseline_both.py - v02 Grid Runner Friendly Version (WP0 Split-Fixed Enhanced)
 # 目标：
 # - 支持数据集 {ideal, perturbed}
 # - 支持目标模式 {fm, k_meas, delta_k}
 # - 统一在 FM_N 空间评估并保存结果（txt + scatter + 可选 summary CSV）
-#
-# 用法示例：
-#   python ft_transformer_baseline_both.py --dataset ideal --mode k_meas --seed 42 --epochs 50
-#   python ft_transformer_baseline_both.py --dataset all --mode all --seed 42 --epochs 50
-#
-# 说明：
-# - 依赖 pytorch_tabular
-# - 输出默认写入 results/ft_v02
-#
-# 注意：
-# - 你当前环境里 rich / lightning 的进度条存在兼容性问题；此脚本保留你原来的“补丁”逻辑。
+# - ✅ 支持 --split_dir：读取固化 train/val/test 切分（WP0 必需）
+# - ✅ 补齐 target-space 指标（MAE_target/RMSE_target/R2_target）到 summary
 
 import os
 import math
@@ -23,6 +14,7 @@ from typing import List, Tuple, Dict, Any
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import matplotlib.pyplot as plt
 
 from pytorch_tabular import TabularModel
@@ -87,7 +79,7 @@ def ensure_dir(p: str) -> None:
 
 
 def split_df(df: pd.DataFrame, seed: int, test_size: float = 0.2, val_size_in_trainval: float = 0.2
-             ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+            ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
     返回 train/val/test 三份：
     - test 占总量 test_size（默认 0.2）
@@ -97,6 +89,24 @@ def split_df(df: pd.DataFrame, seed: int, test_size: float = 0.2, val_size_in_tr
     trainval_df, test_df = train_test_split(df, test_size=test_size, random_state=seed)
     train_df, val_df = train_test_split(trainval_df, test_size=val_size_in_trainval, random_state=seed)
     return train_df.reset_index(drop=True), val_df.reset_index(drop=True), test_df.reset_index(drop=True)
+
+
+def load_splits(df: pd.DataFrame, split_dir: str) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """
+    从 split_dir 读取固化的 train/val/test 索引（npy 文件），并切分 df。
+    split_dir 需要包含：
+      - train_idx.npy
+      - val_idx.npy
+      - test_idx.npy
+    """
+    train_idx = np.load(os.path.join(split_dir, "train_idx.npy"))
+    val_idx = np.load(os.path.join(split_dir, "val_idx.npy"))
+    test_idx = np.load(os.path.join(split_dir, "test_idx.npy"))
+
+    train_df = df.iloc[train_idx].reset_index(drop=True)
+    val_df = df.iloc[val_idx].reset_index(drop=True)
+    test_df = df.iloc[test_idx].reset_index(drop=True)
+    return train_df, val_df, test_df
 
 
 def load_dataset(tag: str, data_dir: str, datasets_map: Dict[str, str]) -> pd.DataFrame:
@@ -158,7 +168,7 @@ def evaluate_in_FM_space(
 
     ss_tot = float(np.sum((y_true_FM - np.mean(y_true_FM)) ** 2))
     ss_res = float(np.sum((y_true_FM - y_pred_FM) ** 2))
-    r2 = float(1.0 - ss_res / ss_tot)
+    r2 = float(1.0 - ss_res / ss_tot) if ss_tot > 0 else float("nan")
 
     eps = 1e-12
     mask = np.abs(y_true_FM) > eps
@@ -216,6 +226,7 @@ def run_one(
     data_dir: str,
     datasets_map: Dict[str, str],
     out_dir: str,
+    split_dir: str = "",
     epochs: int = 50,
     batch_size: int = 256,
 ) -> Dict[str, Any]:
@@ -258,12 +269,16 @@ def run_one(
         trainer_config=trainer_config,
     )
 
-    train_df, val_df, test_df = split_df(df, seed=seed)
+    # ✅ WP0：优先使用固化切分
+    if split_dir:
+        train_df, val_df, test_df = load_splits(df, split_dir)
+    else:
+        train_df, val_df, test_df = split_df(df, seed=seed)
 
-    # 训练（显式提供 validation，避免内部自动切分导致与 GBDT 不一致）
+    # 训练（显式提供 validation，避免内部自动切分导致与其它基线不一致）
     model.fit(train=train_df, validation=val_df)
 
-    # 目标空间评估（供调试参考；不同版本返回结构可能不同，所以做成字符串保存即可）
+    # 目标空间评估（pytorch_tabular 内部）
     try:
         eval_res = model.evaluate(test_df)
     except Exception as e:
@@ -295,11 +310,18 @@ def run_one(
 
     y_pred_raw = pred_df[pred_col].values.astype(float)
 
+    # ✅ FM 空间评估
     metrics = evaluate_in_FM_space(
         tag=tag, mode=mode, seed=seed,
         test_df=test_df_eval, y_pred_raw=y_pred_raw,
         out_dir=out_dir, run_id=run_id,
     )
+
+    # ✅ 补齐：target-space 指标（与 GBDT 对齐写入 summary）
+    y_true_target = test_df_eval[target_col].astype(float).values
+    mae_t = float(mean_absolute_error(y_true_target, y_pred_raw))
+    rmse_t = float(math.sqrt(mean_squared_error(y_true_target, y_pred_raw)))
+    r2_t = float(r2_score(y_true_target, y_pred_raw))
 
     # 写入目标空间评估（调试用）
     eval_path = os.path.join(out_dir, f"{run_id}_metrics_target_space.txt")
@@ -308,6 +330,9 @@ def run_one(
 
     metrics.update({
         "target_col": target_col,
+        "MAE_target": mae_t,
+        "RMSE_target": rmse_t,
+        "R2_target": r2_t,
         "n_train": int(len(train_df)),
         "n_val": int(len(val_df)),
         "epochs": int(epochs),
@@ -326,6 +351,11 @@ def main() -> None:
     parser.add_argument("--batch_size", type=int, default=256)
     parser.add_argument("--out_dir", type=str, default="")
     parser.add_argument("--summary_csv", type=str, default="")  # 可选：追加写入汇总表
+
+    # ✅ WP0：固化 split 目录
+    parser.add_argument("--split_dir", type=str, default="",
+                        help="Fixed split dir, e.g. splits/02/ideal/seed_0")
+
     args = parser.parse_args()
 
     data_dir = os.path.join("data", args.data_version)
@@ -343,6 +373,7 @@ def main() -> None:
                 tag=tag, mode=mode, seed=args.seed,
                 data_dir=data_dir, datasets_map=DEFAULT_DATASETS,
                 out_dir=out_dir,
+                split_dir=args.split_dir,
                 epochs=args.epochs,
                 batch_size=args.batch_size,
             )

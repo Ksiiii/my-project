@@ -1,0 +1,24 @@
+# ===== Python caches =====
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# ===== temp =====
+.pt_tmp/
+
+# ===== training logs & checkpoints =====
+lightning_logs/
+saved_models/
+
+# ===== results hygiene =====
+results/scratch/
+results/archive/
+
+# 若你不想把大量散点图与中间txt推到仓库（推荐），打开下面两行：
+# results/ft*/
+# results/gbdt*/
+
+# ===== VS Code / OS =====
+.vscode/
+.DS_Store
+Thumbs.db

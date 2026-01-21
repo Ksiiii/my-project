@@ -1,0 +1,3 @@
+model,dataset,mode,seed,MAE_FM,RMSE_FM,R2_FM,MAPE_FM(%),within_5%,within_10%,under_tight_ratio,over_tight_ratio,n_test,run_id,target_col,MAE_target,RMSE_target,R2_target,n_train,n_val
+GBDT,ideal,delta_k,0,3.026798367500305e-12,7.624148215068118e-12,1.0,3.1745929089474683e-15,1.0,1.0,0.219,0.0,2000,gbdt_ideal_mode-delta_k_seed-0,delta_k,0.0,0.0,1.0,6400,1600
+FT,ideal,delta_k,0,30507.312297243752,36350.66520386514,0.7615858052734614,35.36991932136673,0.0,0.0,1.0,0.0,2000,ft_ideal_mode-delta_k_seed-0,delta_k,0.24758943524956703,0.2509998552927193,0.0,6400,1600,1,256

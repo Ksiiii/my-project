@@ -1,1 +1,0 @@
-[{'test_loss': 14987905024.0, 'test_mean_squared_error': 14987905024.0}]
